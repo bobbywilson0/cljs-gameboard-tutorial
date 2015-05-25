@@ -1,18 +1,18 @@
 (ns ^:figwheel-always gameboard.core
-    (:require))
+    (:require [goog.dom :as dom]))
 
 (enable-console-print!)
 
-(println "Edits to this text should show up in your developer console.")
+(def ctx (.getContext (dom/getElement "canvas") "2d"))
 
-;; define your app data so that it doesn't get over-written on reload
+(.setTransform ctx 1, 0, 0, 1, 0.5, 0.5)
 
-(defonce app-state (atom {:text "Hello world!"}))
+(.beginPath ctx)
+(.rect ctx 0 0 50 50)
 
+(set! (.-fillStyle ctx) "white")
+(.fill ctx)
 
-(defn on-js-reload []
-  ;; optionally touch your app-state to force rerendering depending on
-  ;; your application
-  ;; (swap! app-state update-in [:__figwheel_counter] inc)
-)
-
+(set! (.-lineWidth ctx) 0.5)
+(set! (.-strokeStyle ctx) "black")
+(.stroke ctx)
