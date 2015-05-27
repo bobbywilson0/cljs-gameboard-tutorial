@@ -59,8 +59,11 @@ Open up the `./src/gameboard/core.cljs` file in your project, and add the atom r
           {:team :red, :x 7, :y 7}]}))
     ```
     
+[code at this point](...)
+    
 ## Drawing units
 
 We are now keeping track of all the units and their positions on the board, the next step is drawing the units in their
-respective positions.
+respective positions. Let's write a `draw-unit!` function that takes a unit argument, and renders a red/black circle in 
+the correct position on the board. 
 

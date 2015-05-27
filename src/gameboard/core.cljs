@@ -52,6 +52,19 @@
   (set! (.-strokeStyle ctx) "black")
   (.stroke ctx))
 
+(defn draw-unit! [unit]
+  (.setTransform ctx 1, 0, 0, 1, 0.5, 0.5)
+
+  (.beginPath ctx)
+  (.arc ctx (:x unit) (:y unit) 30 0  (* (Math/PI) 2) false)
+
+  (set! (.-fillStyle ctx) (:team unit))
+  (.fill ctx)
+
+  (set! (.-lineWidth ctx) 5)
+  (set! (.-strokeStyle ctx) "white")
+  (.stroke ctx))
+
 (defn draw-board! [w h]
   (set! (.-height (dom/getElement "canvas")) (+ 1 (* h tile-size)))
   (set! (.-width (dom/getElement "canvas")) (+ 1 (* w tile-size)))
@@ -64,3 +77,4 @@
     (range 0 h)))
 
 (draw-board! 8 8)
+(draw-unit! (first (:units @game-state)))
