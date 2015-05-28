@@ -21,18 +21,18 @@
       {:team :black, :x 3, :y 2},
       {:team :black, :x 5, :y 2},
       {:team :black, :x 7, :y 2},
-      {:team :red, :x 1, :y 5},
-      {:team :red, :x 3, :y 5},
-      {:team :red, :x 5, :y 5},
-      {:team :red, :x 7, :y 5},
-      {:team :red, :x 0, :y 6},
-      {:team :red, :x 2, :y 6},
-      {:team :red, :x 4, :y 6},
-      {:team :red, :x 6, :y 6},
-      {:team :red, :x 1, :y 7},
-      {:team :red, :x 3, :y 7},
-      {:team :red, :x 5, :y 7},
-      {:team :red, :x 7, :y 7}]}))
+      {:team :red, :x 0, :y 5},
+      {:team :red, :x 2, :y 5},
+      {:team :red, :x 4, :y 5},
+      {:team :red, :x 6, :y 5},
+      {:team :red, :x 1, :y 6},
+      {:team :red, :x 3, :y 6},
+      {:team :red, :x 5, :y 6},
+      {:team :red, :x 7, :y 6},
+      {:team :red, :x 0, :y 7},
+      {:team :red, :x 2, :y 7},
+      {:team :red, :x 4, :y 7},
+      {:team :red, :x 6, :y 7}]}))
 
 (defn tile-color [x y]
   (if (= (even? x) (even? y))
@@ -52,16 +52,17 @@
   (set! (.-strokeStyle ctx) "black")
   (.stroke ctx))
 
+(defn board-offset [val]
+  (+ (/ tile-size 2) (* tile-size val)))
+
 (defn draw-unit! [unit]
-  (.setTransform ctx 1, 0, 0, 1, 0.5, 0.5)
-
   (.beginPath ctx)
-  (.arc ctx (:x unit) (:y unit) 30 0  (* (Math/PI) 2) false)
+  (.arc ctx (board-offset (:x unit)) (board-offset (:y unit)) 20 0  (* Math/PI 2) false)
 
-  (set! (.-fillStyle ctx) (:team unit))
+  (set! (.-fillStyle ctx) (name (:team unit)))
   (.fill ctx)
 
-  (set! (.-lineWidth ctx) 5)
+  (set! (.-lineWidth ctx) 3)
   (set! (.-strokeStyle ctx) "white")
   (.stroke ctx))
 
@@ -77,4 +78,4 @@
     (range 0 h)))
 
 (draw-board! 8 8)
-(draw-unit! (first (:units @game-state)))
+(mapv draw-unit! (:units @game-state))
