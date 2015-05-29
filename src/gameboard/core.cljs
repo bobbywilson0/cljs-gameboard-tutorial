@@ -52,8 +52,8 @@
   (set! (.-strokeStyle ctx) "black")
   (.stroke ctx))
 
-(defn board-offset [val]
-  (+ (/ tile-size 2) (* tile-size val)))
+(defn board-offset [position]
+  (+ (/ tile-size 2) (* tile-size position)))
 
 (defn draw-unit! [unit]
   (.beginPath ctx)
