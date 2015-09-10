@@ -287,7 +287,7 @@ The standard Checkers board is an 8x8 grid of tiles. The tiles are colored cycli
 
 In this tutorial we used ClojureScript with JavaScript interop to draw a game board with the HTML Canvas element. I am hoping that this will be the first part in a series on making an interactive board game with ClojureScript. I am only slightly ahead of this tutorial working on a personal project to do just that. Hopefully we have met the goal which was to get some practice using ClojureScript, Canvas, and doing some interop with JavaScript.
 
-Check out the finished code here: [https://github.com/bobbywilson0/gameboard](https://github.com/bobbywilson0/gameboard)
+[Part 2: drawing game pieces on the board](https://github.com/bobbywilson0/cljs-gameboard-tutorial/blob/master/units.md)
 
 ## Resources
 
