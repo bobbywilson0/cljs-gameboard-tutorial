@@ -3,7 +3,7 @@
 ## Intro
 
 Now that we have drawn a Checkers board the next step is adding units to the game board. The units in this case will be
-the red and black pieces for each respective side. Each unit will have an position on the board, I am going to use `x`
+the red and black pieces for each respective side. Each unit will have a position on the board, I am going to use `x`
 and `y` values. So we can assume that `x` is whichever column (with respect to the tiles) the unit is in and `y` is
 whichever row the unit is in (e.g. [0,0] would refer to the top left tile). 
  
@@ -100,9 +100,27 @@ render the unit at the center of the tile. I think it would be a good idea to wr
 board coordinates to canvas coordinates.
 
 ```clojure
-(defn board-offset [position]
-  (+ (/ tile-size 2) (* tile-size position)))
+(def tile-offset (/ tile-size 2))
+
+(defn board-position [x y]
+   (map #(+ (/ tile-size 2) (* tile-size %)) [x y]))
 ```
 
-With this function we are adding half the value of the tile size (which is the center of the file), to the position
-times the tile size.
+I have defined a constant tile-offset that gives us the length from the edge of the tile to the center (since our tiles
+are square this works for both x and y). Below the constant we have a function that is used to position our game piece
+on the correct tile, and center it within that tile.
+
+Add this to the end of our file:
+
+```clojure
+(mapv draw-unit! (:units @game-state))
+```
+
+This function is mapping all of our units over the `draw-unit!` function which draws all of our game pieces on their
+respective tiles.
+
+Your game board should look like this:
+
+![](http://imgur.com/W1Gw3lE.png)
+
+Well done!

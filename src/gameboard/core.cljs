@@ -5,6 +5,7 @@
 
 (def ctx (.getContext (dom/getElement "canvas") "2d"))
 (def tile-size 50)
+(def tile-offset (/ tile-size 2))
 
 (def game-state
   (atom
@@ -52,13 +53,13 @@
   (set! (.-strokeStyle ctx) "black")
   (.stroke ctx))
 
-(defn board-offset [position]
-  (+ (/ tile-size 2) (* tile-size position)))
+(defn board-position [x y]
+   (map #(+ tile-offset (* tile-size %)) [x y]))
 
 (defn draw-unit! [unit]
   (.beginPath ctx)
-  (.arc ctx (board-offset (:x unit)) (board-offset (:y unit)) 20 0  (* Math/PI 2) false)
-
+  (let [[x y] (board-position (:x unit) (:y unit))]
+    (.arc ctx x y 20 0 (* Math/PI 2) false))
   (set! (.-fillStyle ctx) (name (:team unit)))
   (.fill ctx)
 
