@@ -1,11 +1,24 @@
 (ns ^:figwheel-always gameboard.core
-  (:require [goog.dom :as dom]))
+  (:require [goog.dom :as dom]
+            [goog.graphics :as graphics]
+            [cljs.reader :as reader]))
 
 (enable-console-print!)
 
-(def ctx (.getContext (dom/getElement "canvas") "2d"))
+;;(def ctx (.getContext (dom/getElement "canvas") "2d"))
+(def canvas (dom/getElement "div"))
+
 (def tile-size 50)
 (def tile-offset (/ tile-size 2))
+
+(def black (graphics/SolidFill. "black"))
+(def red (graphics/SolidFill. "red"))
+
+(def black-stroke (graphics/Stroke. 0.5 "black"))
+(def white-stroke (graphics/Stroke. 3 "white"))
+
+(def board-width 8)
+(def board-height 8)
 
 (def game-state
   (atom
@@ -35,48 +48,38 @@
       {:team :red, :x 4, :y 7},
       {:team :red, :x 6, :y 7}]}))
 
+(def board (graphics/createGraphics (* board-width tile-size) (* board-height tile-size)))
+
 (defn tile-color [x y]
   (if (= (even? x) (even? y))
-    "red"
-    "black"))
+    red
+    black))
+
+(defn unit-color [unit]
+  (if (= :red (:team unit))
+    red
+    black))
 
 (defn draw-tile! [x y color]
-  (.setTransform ctx 1, 0, 0, 1, 0.5, 0.5)
+  (.drawRect board x y tile-size tile-size black-stroke color))
 
-  (.beginPath ctx)
-  (.rect ctx x y tile-size tile-size)
-
-  (set! (.-fillStyle ctx) color)
-  (.fill ctx)
-
-  (set! (.-lineWidth ctx) 0.5)
-  (set! (.-strokeStyle ctx) "black")
-  (.stroke ctx))
 
 (defn board-position [x y]
-   (map #(+ tile-offset (* tile-size %)) [x y]))
+  (map #(+ tile-offset (* tile-size %)) [x y]))
 
 (defn draw-unit! [unit]
-  (.beginPath ctx)
   (let [[x y] (board-position (:x unit) (:y unit))]
-    (.arc ctx x y 20 0 (* Math/PI 2) false))
-  (set! (.-fillStyle ctx) (name (:team unit)))
-  (.fill ctx)
+    (.drawCircle board x y 20 white-stroke (unit-color unit))))
 
-  (set! (.-lineWidth ctx) 3)
-  (set! (.-strokeStyle ctx) "white")
-  (.stroke ctx))
-
-(defn draw-board! [w h]
-  (set! (.-height (dom/getElement "canvas")) (+ 1 (* h tile-size)))
-  (set! (.-width (dom/getElement "canvas")) (+ 1 (* w tile-size)))
-
+(defn draw-board! []
   (mapv
     (fn [y]
       (mapv
         (fn [x] (draw-tile! (* tile-size x) (* tile-size y) (tile-color x y)))
-        (range 0 w)))
-    (range 0 h)))
+        (range 0 board-width)))
+    (range 0 board-height)))
 
-(draw-board! 8 8)
+(draw-board!)
 (mapv draw-unit! (:units @game-state))
+
+(.render board canvas)
