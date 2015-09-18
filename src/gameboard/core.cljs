@@ -1,15 +1,13 @@
 (ns ^:figwheel-always gameboard.core
   (:require [goog.dom :as dom]
-            [goog.graphics :as graphics]
-            [cljs.reader :as reader]))
+            [goog.graphics :as graphics]))
 
 (enable-console-print!)
 
-;;(def ctx (.getContext (dom/getElement "canvas") "2d"))
-(def canvas (dom/getElement "div"))
-
 (def tile-size 50)
 (def tile-offset (/ tile-size 2))
+
+(def piece-radius 20)
 
 (def black (graphics/SolidFill. "black"))
 (def red (graphics/SolidFill. "red"))
@@ -48,7 +46,8 @@
       {:team :red, :x 4, :y 7},
       {:team :red, :x 6, :y 7}]}))
 
-(def board (graphics/createGraphics (* board-width tile-size) (* board-height tile-size)))
+(def board (graphics/CanvasGraphics. (* board-width tile-size) (* board-height tile-size)))
+(.createDom board)
 
 (defn tile-color [x y]
   (if (= (even? x) (even? y))
@@ -69,7 +68,10 @@
 
 (defn draw-unit! [unit]
   (let [[x y] (board-position (:x unit) (:y unit))]
-    (.drawCircle board x y 20 white-stroke (unit-color unit))))
+    (.drawEllipse board x y piece-radius piece-radius white-stroke (unit-color unit))))
+
+(defn draw-units! []
+  (mapv draw-unit! (:units @game-state)))
 
 (defn draw-board! []
   (mapv
@@ -80,6 +82,5 @@
     (range 0 board-height)))
 
 (draw-board!)
-(mapv draw-unit! (:units @game-state))
-
+(draw-units!)
 (.render board canvas)

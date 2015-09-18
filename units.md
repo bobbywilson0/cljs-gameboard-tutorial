@@ -69,26 +69,13 @@ the correct position on the board.
 
 ```clojure
 (defn draw-unit! [unit]
-  (.beginPath ctx)
-  (.arc ctx (:x unit) (:y unit) 25 0  (* Math/PI 2) false)
-
-  (set! (.-fillStyle ctx) (:team unit))
-  (.fill ctx)
-
-  (set! (.-lineWidth ctx) 3)
-  (set! (.-strokeStyle ctx) "white")
-  (.stroke ctx))
+  (let [[x y] (board-position (:x unit) (:y unit))]
+    (.drawEllipse board x y piece-radius piece-radius white-stroke (unit-color unit))))
 ```
 
-The `draw-unit!` function takes a unit which will give us all the information we need for drawing the unit. We need to
-start with the `beginPath` method as we did when drawing the game board. Then we use the 
-[arc method](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/arc) to draw a circle. It takes
-x, y, radius, startAngle, endAngle, and anticlockwise. We set x and y as the unit's `x` and `y` values. We set the
-radius as 25 pixels, set the startAngle at 0, and the endAngle at 2π, and the anticlockwise to false. The radius is 
-pretty straightforward, but the startAngle and endAngle are a little weird. Why would we need to use 2π as the endAngle.
-The reason is that the some Canvas API designers decided that radian would make more sense than degrees, so that's what
-we have to use. Anticlockwise isn't really relevant for a circle so we set it to false. We set the fill to be whatever
-color the team is (red or black), and then draw a stroke around the circle as we did with the tiles on the game board.
+The `draw-unit!` function takes a unit which will give us all the information we need for drawing the unit. We are using
+the `drawEllipse` function from the Google Closure Library, which allows us to pass in the position, the radius, stroke,
+and fill (this is makes for a lot easier readability than the low level canvas api which was previously implemented). 
 
 Your game board should now look like this:
 
@@ -103,7 +90,7 @@ board coordinates to canvas coordinates.
 (def tile-offset (/ tile-size 2))
 
 (defn board-position [x y]
-   (map #(+ (/ tile-size 2) (* tile-size %)) [x y]))
+  (map #(+ tile-offset (* tile-size %)) [x y]))
 ```
 
 I have defined a constant tile-offset that gives us the length from the edge of the tile to the center (since our tiles
