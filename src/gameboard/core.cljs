@@ -1,6 +1,7 @@
 (ns ^:figwheel-always gameboard.core
   (:require [goog.dom :as dom]
-            [goog.graphics :as graphics]))
+            [goog.graphics :as graphics]
+            [goog.events :as events]))
 
 (enable-console-print!)
 
@@ -11,6 +12,8 @@
 
 (def black (graphics/SolidFill. "black"))
 (def red (graphics/SolidFill. "red"))
+(def blue (graphics/SolidFill. "blue"))
+
 
 (def black-stroke (graphics/Stroke. 0.5 "black"))
 (def white-stroke (graphics/Stroke. 3 "white"))
@@ -47,7 +50,8 @@
       {:team :red, :x 6, :y 7}]}))
 
 (def board (graphics/CanvasGraphics. (* board-width tile-size) (* board-height tile-size)))
-(.createDom board)
+(def board-dom (.createDom board))
+
 
 (defn tile-color [x y]
   (if (= (even? x) (even? y))
@@ -62,12 +66,14 @@
 (defn draw-tile! [x y color]
   (.drawRect board x y tile-size tile-size black-stroke color))
 
+(defn board-to-client [x y]
+  (map #(+ (* tile-size %) tile-offset) [x y]))
 
-(defn board-position [x y]
-  (map #(+ tile-offset (* tile-size %)) [x y]))
+(defn client-to-board [x y]
+  (map #(- (.ceil js/Math (/ % tile-size)) 1) [x y]))
 
 (defn draw-unit! [unit]
-  (let [[x y] (board-position (:x unit) (:y unit))]
+  (let [[x y] (board-to-client (:x unit) (:y unit))]
     (.drawEllipse board x y piece-radius piece-radius white-stroke (unit-color unit))))
 
 (defn draw-units! []
@@ -83,4 +89,13 @@
 
 (draw-board!)
 (draw-units!)
-(.render board canvas)
+
+(.render board)
+(events/listen
+  (aget (.getElementsByTagName js/document "canvas") 0)
+  events/EventType.MOUSEDOWN
+  (fn [e]
+    ;(.render board)
+    (.drawRect board (.-offsetX e) (.-offsetY e) 10 10 white-stroke blue)))
+
+;(println (client-to-board (.-offsetX e) (.-offsetY e)))
